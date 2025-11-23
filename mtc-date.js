@@ -21,9 +21,10 @@ async function jumpToDate(page, target) {
   const nextMonthSelector = "#next-month"; // カレンダー右矢印ボタン
 
   // 1. 現在の予約日（#cur_date の value）を取得
-  const currentValue = await page.$eval(dateInputSelector, (el) =>
-    el.value.trim()
-  ); // 例: "2025/11/21"
+  await page.waitForSelector(dateInputSelector, { timeout: 10000 });
+const currentValue = await page.$eval(dateInputSelector, el => el.value.trim());
+
+// 例: "2025/11/21"
   const [curYearStr, curMonthStr] = currentValue.split("/");
   const curYear = Number(curYearStr);
   const curMonth = Number(curMonthStr);
@@ -68,18 +69,26 @@ async function jumpToDate(page, target) {
   const dateId = `${yyyy}${mm}${dd}`;
   console.log("狙う日付セル ID:", dateId);
 
-  // 7. その ID の要素が DOM に出現するまで待つ（getElementById を使用）
-  await page.waitForFunction(
-    (id) => !!document.getElementById(id),
-    { timeout: 10000 },
-    dateId
-  );
+  // 7. カレンダー内の a[id] 一覧をログに出しておく（デバッグ用）
+  const idsInCalendar = await page.evaluate(() => {
+    const modal = document.querySelector('#select-calendar') || document;
+    return Array.from(modal.querySelectorAll('a[id]')).map(a => a.id);
+  });
+  console.log("カレンダー内の a[id] 一覧:", idsInCalendar);
 
-  // 8. 実際にクリック（これも getElementById 経由でやる）
-  await page.evaluate((id) => {
+  // 8. その ID の要素を探して、あれば即クリック
+  const clicked = await page.evaluate((id) => {
     const el = document.getElementById(id);
-    if (el) el.click();
+    if (el) {
+      el.click();
+      return true;
+    }
+    return false;
   }, dateId);
+
+  if (!clicked) {
+    throw new Error(`日付セルが見つからなかった: id=${dateId}`);
+  }
 
   console.log("✔ カレンダーの日付セルクリック成功 → カレンダー閉じるはず");
 

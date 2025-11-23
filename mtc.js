@@ -19,6 +19,9 @@ const { selectSubplanAndNext } = require('./mtc-subplan');
 // 失敗時にスクショを撮る関数（カシャ！）
 const { takeScreenshot } = require('./utils/screenshot');
 
+// スプシに追記
+const { appendLog } = require('./sheets');
+
 // ← slack通知
 const { sendSlack } = require('./utils/slack');
 
@@ -37,7 +40,7 @@ const { sendSlack } = require('./utils/slack');
   const target = {
     year: 2025,
     month: 12,
-    day: 13,
+    day: 21,
     hour: 9,
     minute: 0,
     mpId: 42, // コートID（必要に応じて変更）
@@ -108,7 +111,7 @@ const { sendSlack } = require('./utils/slack');
     await jumpToDate(page, {
       year: 2025,
       month: 12,
-      day: 13,
+      day: 21,
     });
 
     // ターゲット枠をクリック
@@ -142,7 +145,7 @@ try {
 
    // Slackにも成功通知
   await sendSlack(
-    `🎾 *予約成功！*\n> ${slotLabel}\nfrom: Magome bot`
+    `🎾 *予約成功！*\n> ${slotLabel}\nfrom: tennis-bot`
   );
 
 } catch (err) {

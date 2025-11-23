@@ -30,6 +30,21 @@ async function writeTest() {
   console.log("✅ スプシへの書き込み成功！");
 }
 
+// ★ シンプル版ラッパー: kind / site / message だけ投げるやつ
+async function appendLog(kind, site, message) {
+  return appendLogRow({
+    kind,
+    site,
+    message,
+    targetDate: "",
+    startTime: "",
+    endTime: "",
+    court: "",
+    status: "",
+  });
+}
+
+
 // ★ ユーザーIDなし版 append 関数
 async function appendLogRow({
   kind,
@@ -79,7 +94,21 @@ async function appendLogRow({
   });
 }
 
+async function appendLog(kind, site, message) {
+  return appendLogRow({
+    kind,
+    site,
+    message,
+    targetDate: "",
+    startTime: "",
+    endTime: "",
+    court: "",
+    status: "",
+  });
+}
+
 module.exports = {
   writeTest,
   appendLogRow,
+  appendLog,
 };

@@ -1,3 +1,8 @@
+// エラー時のスクショ対策で
+let browser = null;
+let page = null;
+
+
 // ページへのログインを担当！
 require('dotenv').config();
 const puppeteer = require('puppeteer');
@@ -11,6 +16,12 @@ const { clickSlot } = require('./mtc-slot');
 // サブプランの選択
 const { selectSubplanAndNext } = require('./mtc-subplan');
 
+// 失敗時にスクショを撮る関数（カシャ！）
+const { takeScreenshot } = require('./utils/screenshot');
+
+// ← slack通知
+const { sendSlack } = require('./utils/slack');
+
 (async () => {
   const LOGIN_URL = 'https://magometc.resv.jp/user/res_user.php';
 
@@ -22,13 +33,28 @@ const { selectSubplanAndNext } = require('./mtc-subplan');
   const homeButtonSelector = '#right-column > div > div.btn-area1 > input';
   const reserveButtonSelector = '#link_next';
 
-  const browser = await puppeteer.launch({
+   // ▼ 予約したいターゲット（ここを変えれば他も全部連動）
+  const target = {
+    year: 2025,
+    month: 12,
+    day: 13,
+    hour: 9,
+    minute: 0,
+    mpId: 42, // コートID（必要に応じて変更）
+  };
+
+  // ログやSlackで使うラベル文字列（例: 2025/12/13 09:00 mpId=42）
+  const slotLabel =
+    `${target.year}/${String(target.month).padStart(2, "0")}/${String(target.day).padStart(2, "0")} ` +
+    `${String(target.hour).padStart(2, "0")}:${String(target.minute).padStart(2, "0")} (mpId=${target.mpId})`;
+
+  browser = await puppeteer.launch({
     headless: false,
     defaultViewport: { width: 1280, height: 800 },
   });
 
   try {
-    const page = await browser.newPage();
+    page = await browser.newPage();
 
     console.log('▼ ログインページへ移動');
     await page.goto(LOGIN_URL, { waitUntil: 'networkidle2' });
@@ -85,30 +111,77 @@ const { selectSubplanAndNext } = require('./mtc-subplan');
       day: 13,
     });
 
-    // ② 枠クリック
-    await clickSlot(page, {
-      year: 2025,
-      month: 12,
-      day: 13,
-      hour: 9,
-      minute: 0,
-      mpId: 42, // コートを指定しないならこの行消してもOK
-    });
+    // ターゲット枠をクリック
+await clickSlot(page, target);
 
     // ③ サブプラン選択 → 次へ進む（1時間を自動選択）
     await selectSubplanAndNext(page, {
       spId: "28", // 「１時間（土日祝）」; 他のプラン使いたくなったらここを変える
     });
 
-    // ここから先は「確認画面」が出ている状態になる想定
-    // → 次ステップで「予約確定ボタン」を自動クリックしていく予定
+// ▼ 最終確認画面の「完了する」ボタンをクリック
+console.log("▼ 予約の最終確定を実行");
+
+try {
+  console.log("🐾 confirmブロック突入"); // ← デバッグログ
+  
+  await page.waitForSelector('#res_confrim_submit', { timeout: 10000 });
+  await Promise.all([
+    page.click('#res_confrim_submit'),
+    page.waitForNavigation({ waitUntil: 'networkidle2' }),
+  ]);
+
+  console.log("🎉 予約確定成功！！");
+
+  // スプシに成功ログ
+  await appendLog(
+    "reserve_ok",
+  "magome",
+  `予約確定成功: ${slotLabel}`
+  );
+
+   // Slackにも成功通知
+  await sendSlack(
+    `🎾 *予約成功！*\n> ${slotLabel}\nfrom: Magome bot`
+  );
+
+} catch (err) {
+  console.error("❌ 予約確定でエラー:", err);
+
+  // 失敗したらスクショ（confirm_error）
+   await takeScreenshot(page, "confirm_error");
+
+  // スプシに失敗ログ（詳細版）
+  await appendLog(
+  "reserve_ng",
+  "magome",
+  `予約確定失敗: ${slotLabel} / reason: ${err.message}`
+);
+// Slackにも失敗通知
+  await sendSlack(
+    `💥 *予約失敗...*\n> ${slotLabel}\nreason: ${err.message}`
+  );
+}
 
     // 少し眺める時間
     await new Promise((resolve) => setTimeout(resolve, 15000));
   } catch (err) {
-    console.error('❌ ログイン〜予約ページ処理でエラー:', err);
-  } finally {
-    await browser.close();
+  console.error("❌ ログイン〜予約ページ処理でエラー:", err);
+
+  if (page) {
+    console.log("⚠ fatal_error スクショ撮るよ");
+    await takeScreenshot(page, "fatal_error");
+  } else {
+    console.warn("⚠ page が未定義なのでスクショ撮れず");
   }
+
+  // ここで Slack にも「致命的エラー」を通知
+  await sendSlack(
+    `💥 *予約処理全体でエラー発生*\n> ${slotLabel}\nreason: ${err.message}`
+  );
+
+} finally {
+  if (browser) await browser.close();
+}
 })();
 

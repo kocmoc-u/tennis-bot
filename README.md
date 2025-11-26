@@ -73,8 +73,9 @@ npm install
 ``GOOGLE_APPLICATION_CREDENTIALS=./credentials.json``  
   
 3. 動作確認（スプシ書き込み）  
-``node sheets.js``  
-▶️ 実行方法（仮）  
+``node sheets.js``
+  
+4. ▶️ 実行方法  
 ``node mtc.js``  
   
 📌 今後の予定（WIP）  
@@ -85,4 +86,5 @@ Puppeteer の headless モード最適化
   
 📄 ライセンス  
 This project is for personal/educational use
+
 

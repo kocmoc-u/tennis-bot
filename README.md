@@ -77,11 +77,11 @@ npm install
 ▶️ 実行方法（仮）
 ``node mtc.js``
 
-📌 今後の予定（WIP）
-予約ロジックの安定化
-予約失敗時のリトライ処理
-スプレッドシートのログ構造整理
-Puppeteer の headless モード最適化
-
-📄 ライセンス
+📌 今後の予定（WIP）  
+予約ロジックの安定化  
+予約失敗時のリトライ処理  
+スプレッドシートのログ構造整理  
+Puppeteer の headless モード最適化  
+  
+📄 ライセンス  
 This project is for personal/educational use

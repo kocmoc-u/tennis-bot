@@ -61,22 +61,22 @@ Puppeteer を用いてログイン・ページ遷移・予約処理を行い、
 
 ---
 
-## ⚙️ セットアップ（簡易）
-
-1. インストール
-npm install
-
-2. .env の準備
-``LOGIN_ID=xxxx``
-``LOGIN_PASSWORD=xxxx``
-``SPREADSHEET_ID=xxxxx``
-``GOOGLE_APPLICATION_CREDENTIALS=./credentials.json``
-
-3. 動作確認（スプシ書き込み）
-``node sheets.js``
-▶️ 実行方法（仮）
-``node mtc.js``
-
+## ⚙️ セットアップ（簡易）  
+  
+1. インストール  
+npm install  
+  
+2. .env の準備  
+``LOGIN_ID=xxxx``  
+``LOGIN_PASSWORD=xxxx``  
+``SPREADSHEET_ID=xxxxx``  
+``GOOGLE_APPLICATION_CREDENTIALS=./credentials.json``  
+  
+3. 動作確認（スプシ書き込み）  
+``node sheets.js``  
+▶️ 実行方法（仮）  
+``node mtc.js``  
+  
 📌 今後の予定（WIP）  
 予約ロジックの安定化  
 予約失敗時のリトライ処理  
@@ -85,3 +85,4 @@ Puppeteer の headless モード最適化
   
 📄 ライセンス  
 This project is for personal/educational use
+

@@ -143,6 +143,7 @@ Slack通知の本文にも @ JST を追記
 - `SPREADSHEET_ID=xxxxx` 
 - `GOOGLE_APPLICATION_CREDENTIALS=./credentials.json` 
 
+
 3. 動作確認（スプシ書き込み） 
 `node sheets.js`
 
@@ -161,3 +162,15 @@ Slack通知の本文にも @ JST を追記
 Puppeteer の headless モード最適化   
 
 📄 ライセンス This project is for personal/educational use
+
+4. ▶️ 実行方法  
+``node mtc.js``  
+  
+📌 今後の予定（WIP）  
+予約ロジックの安定化  
+予約失敗時のリトライ処理  
+スプレッドシートのログ構造整理  
+Puppeteer の headless モード最適化  
+  
+📄 ライセンス  
+This project is for personal/educational use

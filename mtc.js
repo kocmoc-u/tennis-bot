@@ -12,7 +12,7 @@ const {
 // 基本パターン：時間・コートID
 // ★ ここを変えれば「日曜17時」などにも流用できる
 const BASE_PATTERN = {
-  hour: 17,      // ← ここを 17 にすれば「17時」
+  hour: 9,      // ← ここを 17 にすれば「17時」
   minute: 0,
   mpId: 42,     // コートID
 };
@@ -20,10 +20,10 @@ const BASE_PATTERN = {
 // 予約したい日付たち（例：2025年12月の第1〜第4土曜）
 // ★ day だけ差し替えれば OK（曜日は自分で調整）
 const targets = [
-  { year: 2025, month: 12, day: 14,  ...BASE_PATTERN }, // 第1土
-  { year: 2025, month: 12, day: 20, ...BASE_PATTERN }, // 第2土
-  { year: 2025, month: 12, day: 21, ...BASE_PATTERN }, // 第3土
-  { year: 2025, month: 12, day: 27, ...BASE_PATTERN }, // 第4土 ここだけ空きあり
+  { year: 2026, month: 1, day: 10,  ...BASE_PATTERN }, // 第2土
+  { year: 2026, month: 1, day: 17, ...BASE_PATTERN }, // 第3土
+  { year: 2026, month: 1, day: 24, ...BASE_PATTERN }, // 第4土
+  { year: 2026, month: 1, day: 31, ...BASE_PATTERN }, // 第5土
   // 必要なら第5土もここに追加
 ];
 
